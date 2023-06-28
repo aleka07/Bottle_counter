@@ -32,6 +32,14 @@ cx1 = 350  # Changed from cy1 to cx1 for x-axis tracking
 offset = 6
 counter = []
 
+# Output video settings
+output_file = "output.mp4"
+output_fps = cap.get(cv2.CAP_PROP_FPS)
+output_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+output_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+out = cv2.VideoWriter(output_file, fourcc, output_fps, (output_width, output_height))
+
 while True:
     ret, frame = cap.read()
     if not ret:
@@ -80,6 +88,9 @@ while True:
     # Show frame
     cv2.imshow("RGB", frame)
 
+    # Write frame to output video
+    out.write(frame)
+
     # Break loop on ESC key press
     if cv2.waitKey(1) & 0xFF == 27:
         break
@@ -88,6 +99,7 @@ while True:
 with open("count.txt", "w") as file:
     file.write(f"The total count of bottles is {len(counter)}.\n")
 
-# Release video capture and close windows
+# Release video capture, close windows, and release output video
 cap.release()
+out.release()
 cv2.destroyAllWindows()
